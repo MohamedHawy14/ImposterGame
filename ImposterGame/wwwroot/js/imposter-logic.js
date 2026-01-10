@@ -291,41 +291,47 @@ function startNewRound() {
         imposterGuessedCorrectly: false
     };
 
-    // Smart Random Imposter Selection Algorithm
+    // TRUE CHAOS RANDOMNESS with Smart Brakes
+    // Every round: pick completely at random, no waiting for turns
     let imposter;
     
-    // Get last 10 rounds history (for max 3 occurrences check)
+    // Get the last 10 rounds for frequency checking
     const last10Rounds = gameState.imposterHistory.slice(-10);
     
-    // Get last 2 rounds (for consecutive limit check)
-    const last2Rounds = gameState.imposterHistory.slice(-2);
-    
-    // Filter eligible players based on rules:
-    // a) Haven't been imposter in the last 2 consecutive rounds
-    // b) Haven't appeared more than 3 times in the last 10 rounds
+    // Filter eligible players: those who haven't broken the smart limits
     const eligiblePlayers = gameState.players.filter(player => {
-        // Check consecutive limit: not in last 2 rounds
-        const isConsecutive = last2Rounds.includes(player);
-        if (isConsecutive) {
-            return false;
+        // Smart Brake 1: Consecutive Limit
+        // Check if player was imposter in BOTH of the last 2 rounds (truly consecutive)
+        const historyLength = gameState.imposterHistory.length;
+        if (historyLength >= 2) {
+            const lastRound = gameState.imposterHistory[historyLength - 1];
+            const secondLastRound = gameState.imposterHistory[historyLength - 2];
+            if (lastRound === player && secondLastRound === player) {
+                // Player was imposter 2 times in a row - exclude them
+                return false;
+            }
         }
         
-        // Check max occurrences: count how many times player appears in last 10 rounds
+        // Smart Brake 2: Frequency Limit
+        // Count how many times this player was imposter in the last 10 rounds
         const occurrences = last10Rounds.filter(p => p === player).length;
         if (occurrences >= 3) {
+            // Player hit the 3-in-10 limit - exclude them
             return false;
         }
         
+        // Player passed both checks - they're eligible
         return true;
     });
     
-    // Pick random player from eligible list
+    // TRUE RANDOM SELECTION from eligible players
     if (eligiblePlayers.length > 0) {
-        // Highly random selection from eligible players
+        // Pure random pick - no patterns, no loops, just chaos
         const randomIndex = Math.floor(Math.random() * eligiblePlayers.length);
         imposter = eligiblePlayers[randomIndex];
     } else {
-        // Rare case: all players hit limits, pick any random except the very last imposter
+        // Fallback: All players hit limits (shouldn't happen with 3+ players)
+        // Pick any random player except the very last one
         const lastImposter = gameState.imposterHistory.length > 0 
             ? gameState.imposterHistory[gameState.imposterHistory.length - 1] 
             : null;
@@ -338,12 +344,12 @@ function startNewRound() {
             const randomIndex = Math.floor(Math.random() * fallbackPlayers.length);
             imposter = fallbackPlayers[randomIndex];
         } else {
-            // Absolute fallback: if only one player exists, pick them
+            // Absolute fallback (only if 1 player exists)
             imposter = gameState.players[0];
         }
     }
     
-    // Update imposter history (keep last 10)
+    // Update history: add new imposter, keep only last 10
     gameState.imposterHistory.push(imposter);
     if (gameState.imposterHistory.length > 10) {
         gameState.imposterHistory.shift();
