@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - اقفش امبوستر</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ImposterGame.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+</head>
+<body>
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer style="text-align: center; padding: 20px; font-family: 'Cairo', sans-serif; color: #d4af37; font-size: 14px; font-weight: 400;">
+        تصميم وتطوير: <span style="font-weight: 600; color: #ffd700;">حمو الحاوي</span>
+        <span style="margin: 0 10px;">|</span>
+        <a href="#" onclick="showTermsModal(); return false;" style="color: #d4af37; text-decoration: none; font-weight: 500; transition: all 0.3s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;" onmouseover="this.style.color='#ffd700'; this.style.textDecoration='underline';" onmouseout="this.style.color='#d4af37'; this.style.textDecoration='none';">شروط وقوانين اللعبة</a>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

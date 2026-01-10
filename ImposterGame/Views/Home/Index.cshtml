@@ -1,0 +1,240 @@
+﻿@{
+    ViewData["Title"] = "اقفش امبوستر";
+}
+
+<link rel="stylesheet" href="~/css/imposter-style.css" asp-append-version="true" />
+
+<!-- Toast Container -->
+<div class="toast-container">
+    <div id="toast" class="toast"></div>
+</div>
+
+<!-- Custom Reset Modal -->
+<div id="resetModalBackdrop" class="modal-backdrop-custom"></div>
+<div id="resetModal" class="modal-custom">
+    <div class="modal-content-custom">
+        <div class="modal-header-custom">
+            <h3 class="modal-title-custom">تصفير اللعبة</h3>
+        </div>
+        <div class="modal-body-custom">
+            هل أنت متأكد من تصفير جميع النقاط والأسماء؟
+        </div>
+        <div class="modal-footer-custom">
+            <button class="modal-btn modal-btn-confirm" onclick="confirmReset()">نعم، صفّر</button>
+            <button class="modal-btn modal-btn-cancel" onclick="cancelReset()">إلغاء</button>
+        </div>
+    </div>
+</div>
+
+<!-- Minimum Players Modal -->
+<div id="minPlayersModalBackdrop" class="modal-backdrop-custom"></div>
+<div id="minPlayersModal" class="modal-custom">
+    <div class="modal-content-custom">
+        <div class="modal-header-custom">
+            <h3 class="modal-title-custom">يا عم متهزرش</h3>
+        </div>
+        <div class="modal-body-custom">
+            لازم 3 لاعيبة على الأقل يا برنس!
+        </div>
+        <div class="modal-footer-custom">
+            <button class="modal-btn modal-btn-cancel" onclick="closeMinimumPlayersModal()">حسناً</button>
+        </div>
+    </div>
+</div>
+
+<!-- Terms & Conditions Modal -->
+<div id="termsModalBackdrop" class="modal-backdrop-custom"></div>
+<div id="termsModal" class="modal-custom">
+    <div class="modal-content-custom modal-content-terms">
+        <div class="modal-header-custom">
+            <h3 class="modal-title-custom">إزاي تلعب وتقفش الأمبوستر؟</h3>
+        </div>
+        <div class="modal-body-custom modal-body-terms">
+            <div class="terms-rules-list">
+                <div class="rule-item">
+                    <span class="rule-number">1.</span>
+                    <span class="rule-text">إحنا مجموعة أصحاب، واحد فينا "أمبوستر" (جاسوس) ميعرفش الكلمة السرية، والباقي كلهم عارفينها.</span>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-number">2.</span>
+                    <span class="rule-text">كل واحد بيبدأ يسأل سؤال ذكي من غير ما يبين الكلمة، والهدف إننا نكشف الجاسوس.</span>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-number">3.</span>
+                    <span class="rule-text">الجاسوس هدفه يمثل إنه عارف الكلمة، ويحاول يلقطها من كلامنا.</span>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-number">4.</span>
+                    <span class="rule-text">بعد ما نخلص كلام، بنصوت على أكتر واحد شاكين فيه.</span>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-number">5.</span>
+                    <span class="rule-text">لو قفشنا الأمبوستر، هياخد فرصة أخيرة يخمن الكلمة.. لو خمنها صح، هيقلب الطاولة ويكسب نقط!</span>
+                </div>
+            </div>
+            <div class="terms-scoring-section">
+                <h4 class="terms-scoring-title">قوانين النقاط:</h4>
+                <div class="scoring-rule-item">
+                    <span class="scoring-icon">✓</span>
+                    <span class="scoring-text">اللي يقفش الأمبوستر بياخد <strong>10 نقط</strong>.</span>
+                </div>
+                <div class="scoring-rule-item">
+                    <span class="scoring-icon">✓</span>
+                    <span class="scoring-text">الأمبوستر بياخد <strong>5 نقط</strong> عن كل واحد يضلله ويصوت غلط.</span>
+                </div>
+                <div class="scoring-rule-item">
+                    <span class="scoring-icon">✓</span>
+                    <span class="scoring-text">الأمبوستر بياخد <strong>10 نقط</strong> لو خمن الكلمة السرية صح في الآخر.</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer-custom">
+            <button class="modal-btn modal-btn-confirm" onclick="closeTermsModal()">فهمت</button>
+        </div>
+    </div>
+</div>
+
+<div class="game-container">
+    <!-- Setup Screen -->
+    <div id="setupScreen" class="game-screen active">
+        <div class="card">
+            <h1>🎭 اقفش امبوستر</h1>
+            <h2>إعداد اللاعبين</h2>
+            <div class="input-group">
+                <input type="text" id="playerNameInput" class="form-control" placeholder="أدخل اسم اللاعب" />
+            </div>
+            <button class="btn btn-primary" onclick="addPlayer()">إضافة لاعب</button>
+            <ul id="playerList" class="player-list"></ul>
+            <button id="startGameBtn" class="btn btn-primary" onclick="startGame()">بدء اللعبة</button>
+            <button class="btn btn-reset" onclick="resetGame()" style="margin-top: 10px;">تصفير اللعبة</button>
+        </div>
+    </div>
+
+    <!-- Category Selection Screen -->
+    <div id="categorySelectionScreen" class="game-screen">
+        <div class="card">
+            <h2>اختر الفئة</h2>
+            <div class="category-grid">
+                <div class="category-btn حيوانات" onclick="selectCategory('حيوانات')">
+                    <div class="category-icon">🦁</div>
+                    <div>حيوانات</div>
+                </div>
+                <div class="category-btn ملابس" onclick="selectCategory('ملابس')">
+                    <div class="category-icon">👕</div>
+                    <div>ملابس</div>
+                </div>
+                <div class="category-btn أكلات" onclick="selectCategory('أكلات')">
+                    <div class="category-icon">🍕</div>
+                    <div>أكلات</div>
+                </div>
+                <div class="category-btn مهن" onclick="selectCategory('مهن')">
+                    <div class="category-icon">👨‍💼</div>
+                    <div>مهن</div>
+                </div>
+                <div class="category-btn أفلام" onclick="selectCategory('أفلام')">
+                    <div class="category-icon">🎬</div>
+                    <div>أفلام</div>
+                </div>
+                <div class="category-btn عشوائي" onclick="selectCategory('عشوائي')" @* style="grid-column: 1 / -1; *@">
+                    <div class="category-icon">🎲</div>
+                    <div>عشوائي</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Reveal Screen -->
+    <div id="roleRevealScreen" class="game-screen">
+        <div class="card role-reveal-card">
+            <h2>دورك</h2>
+            <div class="player-name-display" id="currentPlayerName"></div>
+            <div class="eye-icon-container" id="eyeIconContainer" onclick="toggleRole()">
+                <div class="eye-icon">👁️</div>
+            </div>
+            <div class="role-display hidden" id="roleDisplay"></div>
+            <button class="btn btn-primary" id="nextPlayerBtn" onclick="nextPlayer()" style="display: none; margin-top: 20px;">التالي</button>
+            <button class="btn btn-back" onclick="backToSetup()" style="margin-top: 15px;">العودة للإعداد</button>
+        </div>
+    </div>
+
+    <!-- Question Starter Screen -->
+    <div id="questionStarterScreen" class="game-screen">
+        <div class="card question-starter-card">
+            <h2>مين هيبدأ الكلام؟</h2>
+            <div class="question-starter-name" id="questionStarterName"></div>
+            <p class="question-starter-text" id="questionStarterText"></p>
+            <button class="btn btn-primary" onclick="startVoting()" style="margin-top: 30px;">بدء التصويت</button>
+        </div>
+    </div>
+
+    <!-- Voting Screen -->
+    <div id="votingScreen" class="game-screen">
+        <div class="card">
+            <h2>مين الامبوستر؟</h2>
+            <div class="current-player-indicator" id="votingPlayerName"></div>
+            <p style="text-align: center; margin-bottom: 20px; opacity: 0.8;">شاكك في مين يا برنس؟</p>
+            <ul id="votingList" class="voting-list"></ul>
+            <button class="btn btn-back" onclick="backToSetup()" style="margin-top: 15px;">العودة للإعداد</button>
+        </div>
+    </div>
+
+    <!-- Suspense Screen -->
+    <div id="suspenseScreen" class="game-screen">
+        <div class="card suspense-container">
+            <h2>هنكشفه اهو...</h2>
+            <div id="suspensePulse" class="suspense-countdown">
+                <span id="suspenseCountdown">5</span>
+            </div>
+            <div class="suspense-text">استعدوا للكشف!</div>
+        </div>
+    </div>
+
+    <!-- Imposter Reveal Screen -->
+    <div id="imposterRevealScreen" class="game-screen">
+        <div class="card imposter-reveal-screen">
+            <h2>الامبوستر هو...</h2>
+            <div class="imposter-reveal-name" id="imposterRevealName"></div>
+        </div>
+    </div>
+
+    <!-- Imposter's Last Chance Screen -->
+    <div id="impostersLastChanceScreen" class="game-screen">
+        <div class="card imposters-last-chance-container">
+            <h2>فرصتك الأخيرة!</h2>
+            <div class="imposter-name-display-large" id="imposterNameDisplay"></div>
+            <p style="text-align: center; margin-bottom: 20px; opacity: 0.8;">اختر الكلمة الصحيحة من القائمة</p>
+            <div class="imposter-timer-container">
+                <div class="imposter-timer" id="imposterTimer">40</div>
+                <p style="font-size: 1rem; opacity: 0.7; margin-top: 10px;">ثانية متبقية</p>
+            </div>
+            <div class="imposter-words-grid" id="imposterWordsContainer"></div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="game-screen">
+        <div class="card results-container">
+            <h2>نتائج اللعبة</h2>
+            <div class="imposter-reveal" id="imposterReveal"></div>
+            <h3>نتائج التصويت</h3>
+            <div id="votingResults"></div>
+            <div id="imposterGuessResult" class="guess-result"></div>
+            <h3 style="margin-top: 30px;">النقاط</h3>
+            <table class="scores-table">
+                <thead>
+                    <tr>
+                        <th>اللاعب</th>
+                        <th>النقاط</th>
+                    </tr>
+                </thead>
+                <tbody id="scoresTableBody"></tbody>
+            </table>
+            <button class="btn btn-primary" onclick="newRound()" style="margin-top: 20px;">جولة جديدة</button>
+            <button class="btn btn-secondary" onclick="changeCategory()" style="margin-top: 10px;">تغيير القسم</button>
+            <button class="btn btn-back" onclick="backToSetup()" style="margin-top: 10px;">العودة للإعداد</button>
+            <button class="btn btn-reset" onclick="resetGame()" style="margin-top: 10px;">تصفير اللعبة</button>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/imposter-logic.js" asp-append-version="true"></script>
