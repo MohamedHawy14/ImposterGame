@@ -68,7 +68,7 @@
 
 1. **استنساخ المشروع**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/MohamedHawy14/ImposterGame.git
    cd Imposter
    ```
 
